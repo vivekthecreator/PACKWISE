@@ -48,7 +48,7 @@ except ImportError:
     print("Notice: google-genai SDK not imported. Running in autonomous local audit mode.")
 
 app = FastAPI(
-    title="PackAI Pro - Scientific Food Packaging Engine",
+    title="PackWise - Scientific Food Packaging Engine",
     description="SIH 26236 Food Packaging Recommendation Engine: Formula Engine + Gemini AI Auditor & Explainer Layer",
     version="2.6.0"
 )
@@ -986,14 +986,18 @@ async def shelf_life_model(request: Request):
         days = {"baseline": 4, "generic": 9, "optimized": 21}
     return JSONResponse(content={"product": product, "days": days})
 
-# Static File Handlers
-@app.get("/")
+# Static File Handlers & Health Checks
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return FileResponse(os.path.join(BASE_DIR, "index.html"))
 
-@app.get("/index.html")
+@app.api_route("/index.html", methods=["GET", "HEAD"])
 async def get_index():
     return FileResponse(os.path.join(BASE_DIR, "index.html"))
+
+@app.api_route("/health", methods=["GET", "HEAD"])
+async def health():
+    return JSONResponse(content={"status": "healthy", "service": "PackWise"})
 
 if os.path.exists(os.path.join(BASE_DIR, "css")):
     app.mount("/css", StaticFiles(directory=os.path.join(BASE_DIR, "css")), name="css")
@@ -1002,17 +1006,28 @@ if os.path.exists(os.path.join(BASE_DIR, "js")):
 
 
 def start_server(preferred_ports=[8080, 5000, 8000, 3000]):
+    cloud_port = os.environ.get("PORT")
+    if cloud_port:
+        try:
+            port = int(cloud_port)
+            print(f"Starting PackWise on Render Cloud Port: {port} (0.0.0.0)")
+            sys.stdout.flush()
+            uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
+            return
+        except Exception as e:
+            print("Error parsing PORT env var:", e)
+
     for port in preferred_ports:
         try:
             print(f"============================================================")
-            print(f"PackAI Pro - FastAPI Scientific Food Packaging Engine")
+            print(f"PackWise - FastAPI Scientific Food Packaging Engine")
             print(f"Tier 1: Formula Engine (Sole Numerical Authority)")
             print(f"Tier 2: Gemini AI Auditor (Independent Scientific Audit)")
             print(f"Tier 3: Gemini Scientific Explainer & Advisory")
-            print(f"Server live at: http://localhost:{port}")
+            print(f"Server live at: http://localhost:{port} (0.0.0.0)")
             print(f"============================================================")
             sys.stdout.flush()
-            uvicorn.run(app, host="127.0.0.1", port=port, log_level="info")
+            uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
             return
         except OSError:
             print(f"Port {port} in use, trying next port...")
