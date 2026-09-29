@@ -28,8 +28,6 @@ It bridges agricultural science, polymer chemistry, and computational food techn
 
 ## 🏛️ System Architecture
 
-![PackWise Technical Architecture](packwise_architecture.jpg)
-
 ```mermaid
 flowchart TD
     A["User Input: Commodity & Supply Chain Parameters\n(Moisture, Fat, pH, Storage, Transit)"] --> B["Tier 1: Deterministic Multi-Factor Formula Engine"]
@@ -129,6 +127,18 @@ d:/sih236foodpakaging/
 │   └── app.js            # Bilingual controller, dynamic chart & report logic
 └── app.js                # Core synchronized logic controller
 ```
+
+---
+
+## 🔮 Future Scope & Innovation Roadmap
+
+![PackWise Future Roadmap](packwise_future_roadmap.jpg)
+
+1. **IoT Smart & Active Packaging:** RFID/NFC freshness tags, cold-chain time-temperature indicators (TTI), and wireless in-package O₂/CO₂ sensors.
+2. **Computer Vision Spoilage AI:** Smartphone camera-based fresh produce quality scoring and hyperspectral defect inspection before packing.
+3. **Farm-to-Fork Blockchain Traceability:** Decentralized supply-chain provenance and automated Plastic Waste Management EPR credit verification for recyclers.
+4. **B2B Sustainable Polymer Marketplace:** Direct digital bridge connecting MoFPI food processors with certified biopolymer and PCR resin manufacturers.
+5. **Vernacular Voice AI for MSMEs & Farmers:** Multilingual offline-first voice assistant in 10+ Indian regional languages (Hindi, Marathi, Tamil, Telugu, etc.).
 
 ---
 
