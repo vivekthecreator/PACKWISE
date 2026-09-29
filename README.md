@@ -28,6 +28,8 @@ It bridges agricultural science, polymer chemistry, and computational food techn
 
 ## 🏛️ System Architecture
 
+![PackWise Technical Architecture](packwise_architecture.jpg)
+
 ```mermaid
 flowchart TD
     A["User Input: Commodity & Supply Chain Parameters\n(Moisture, Fat, pH, Storage, Transit)"] --> B["Tier 1: Deterministic Multi-Factor Formula Engine"]
