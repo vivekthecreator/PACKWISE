@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PackWise | FoodTech AI Decision-Support Dashboard</title>
+  
+  <!-- Inter Font & Chart.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css?v=2.9.0">
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="#" class="brand-badge" onclick="switchView('dashboard')">
+        <div class="brand-icon">📦</div>
+        <div class="brand-name">PACK<span>WISE</span></div>
+      </a>
+      <!-- Language Switcher: English / Hindi -->
+      <div class="lang-switch-wrap" style="display:inline-flex;align-items:center;background:#E2E8F0;padding:3px 4px;border-radius:9999px;border:1px solid #CBD5E1;box-shadow:inset 0 1px 3px rgba(0,0,0,0.08);margin-left:12px;gap:3px;">
+        <button id="lang-btn-en" type="button" class="lang-btn active" onclick="setLanguage('en')" style="border:none;outline:none;cursor:pointer;padding:6px 14px;border-radius:9999px;font-size:0.8rem;font-weight:700;font-family:'Inter',-apple-system,sans-serif;display:inline-flex;align-items:center;gap:5px;transition:all 0.2s ease;background:#0F766E;color:#FFFFFF;box-shadow:0 2px 8px rgba(15,118,110,0.35);">
+          🌐 English
+        </button>
+        <button id="lang-btn-hi" type="button" class="lang-btn" onclick="setLanguage('hi')" style="border:none;outline:none;cursor:pointer;padding:6px 14px;border-radius:9999px;font-size:0.8rem;font-weight:700;font-family:'Inter',-apple-system,sans-serif;display:inline-flex;align-items:center;gap:5px;transition:all 0.2s ease;background:transparent;color:#475569;">
+          हिंदी
+        </button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-secondary" style="padding:6px 12px;font-size:0.8rem;" onclick="switchView('reports')" data-i18n="topbar_view_spec">
+        📋 View Spec Sheet
+      </button>
+      <div class="user-pill">
+        <div class="user-avatar">VK</div>
+        <span data-i18n="topbar_role">Food Scientist</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <div class="app-container">
+    
+    <!-- Left Dark Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-menu">
+        <div class="menu-item active" onclick="switchNav(this, 'dashboard')">
+          <span class="icon">🏠</span><span data-i18n="nav_dashboard">Dashboard</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'analyze')">
+          <span class="icon">🔬</span><span data-i18n="nav_analyze">Food Analysis</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'materials')">
+          <span class="icon">📦</span><span data-i18n="nav_materials">Materials DB</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'compare')">
+          <span class="icon">⚖️</span><span data-i18n="nav_compare">Compare</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'sustainability')">
+          <span class="icon">🌱</span><span data-i18n="nav_sustainability">Sustainability</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'shelflife')">
+          <span class="icon">📈</span><span data-i18n="nav_shelflife">Shelf-Life Model</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'reports')">
+          <span class="icon">📋</span><span data-i18n="nav_reports">Reports &amp; PDF</span>
+        </div>
+        <div class="menu-item" onclick="switchNav(this, 'settings')">
+          <span class="icon">⚙️</span><span data-i18n="nav_settings">Settings</span>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div data-i18n="sidebar_footer_title">MoFPI Decision Support System</div>
+        <div style="font-size:0.7rem;margin-top:2px;">v2.6.4 · Agri &amp; FoodTech Theme</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Work Area -->
+    <main class="content-area">
+
+      <!-- ==============================================
+           SCREEN 01 & 02: MAIN DASHBOARD OVERVIEW
+      =============================================== -->
+      <section id="view-dashboard" class="page-view active">
+        <div class="page-header">
+          <h1 data-i18n="dash_welcome">Good Morning, User 👋</h1>
+          <p data-i18n="dash_sub">Start a new packaging analysis or review existing formulations across 128 certified packaging materials.</p>
+        </div>
+
+        <!-- 4 Summary KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-header"><span data-i18n="kpi_analyses">Analyses Run</span><span>🧪</span></div>
+            <div class="kpi-val">24</div>
+            <div class="kpi-change">↑ 8 this week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span data-i18n="kpi_polymers">Polymers in DB</span><span>📦</span></div>
+            <div class="kpi-val">128</div>
+            <div class="kpi-change">IS &amp; FSSAI Aligned</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span data-i18n="kpi_avg_score">Avg Match Score</span><span>🎯</span></div>
+            <div class="kpi-val">87%</div>
+            <div class="kpi-change">High Barrier Fit</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-header"><span data-i18n="kpi_reports">Reports Created</span><span>📋</span></div>
+            <div class="kpi-val">18</div>
+            <div class="kpi-change">Export Ready</div>
+          </div>
+        </div>
+
+        <!-- Modern Hero Section with 3D Packaging Pouch Illustration -->
+        <div class="hero-card-modern">
+          <div>
+            <div class="hero-pill-modern">
+              <span>✨</span> AI-POWERED DECISION SUPPORT
+            </div>
+            <h2 class="hero-heading-modern">
+              AI Packaging Advisor for Food Commodities
+            </h2>
+            <p class="hero-sub-modern">
+              Intelligent packaging recommendations based on food properties, storage conditions, and transportation requirements. Formulate optimal barrier materials, MAP gas atmospheres, and eco-friendly biopolymers.
+            </p>
+            <div class="hero-actions-modern">
+              <button class="btn btn-primary" style="background:white;color:var(--primary);box-shadow:none;font-weight:700;" onclick="switchView('analyze')">
+                ⚡ Start Food Analysis
+              </button>
+              <button class="btn btn-secondary" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.28);" onclick="switchView('materials')">
+                📦 Explore Materials (128)
+              </button>
+            </div>
+          </div>
+
+          <!-- 3D Packaging Pouch Isometric SVG -->
+          <div class="hero-3d-visual">
+            <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="pouchGrad" x1="40" y1="40" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2DD4BF" stop-opacity="0.95"/>
+                  <stop offset="0.5" stop-color="#0F766E"/>
+                  <stop offset="1" stop-color="#042F2E"/>
+                </linearGradient>
+                <linearGradient id="sealGrad" x1="0" y1="0" x2="240" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#5EEAD4"/>
+                  <stop offset="1" stop-color="#14B8A6"/>
+                </linearGradient>
+                <filter id="glow3d" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="8" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+              </defs>
+
+              <!-- Ambient Glow Base -->
+              <ellipse cx="120" cy="205" rx="75" ry="18" fill="#022c22" opacity="0.4"/>
+
+              <!-- Main Standing Barrier Pouch (Isometric) -->
+              <path d="M60 65 L85 35 L155 35 L180 65 L170 190 Q120 205 70 190 Z" fill="url(#pouchGrad)" stroke="#5EEAD4" stroke-width="2"/>
+
+              <!-- Hermetic Top Heat Seal Bar -->
+              <polygon points="85,35 155,35 150,48 90,48" fill="url(#sealGrad)"/>
+              <line x1="90" y1="42" x2="150" y2="42" stroke="#042F2E" stroke-width="1.5" stroke-dasharray="2 2"/>
+
+              <!-- Transparent Window / Film Barrier Layer -->
+              <ellipse cx="120" cy="120" rx="36" ry="44" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+
+              <!-- Food Produce Inside Window (Tomato / Apple) -->
+              <circle cx="120" cy="122" r="24" fill="#EF4444"/>
+              <path d="M120 98 C122 93 126 92 128 90 C125 93 122 97 121 100 Z" fill="#22C55E"/>
+              <path d="M115 108 Q125 104 128 116" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+
+              <!-- MAP Gas Bubbles (O2, CO2, N2) -->
+              <circle cx="95" cy="85" r="5" fill="#38BDF8" opacity="0.8"/>
+              <circle cx="145" cy="90" r="4" fill="#FBBF24" opacity="0.8"/>
+              <circle cx="142" cy="160" r="6" fill="#94A3B8" opacity="0.8"/>
+
+              <!-- AI Shield Pulse Orbit -->
+              <circle cx="120" cy="120" r="68" stroke="#A78BFA" stroke-width="1" stroke-dasharray="4 6" opacity="0.6"/>
+              <circle cx="178" cy="85" r="4" fill="#A78BFA" filter="url(#glow3d)"/>
+              <circle cx="62" cy="155" r="4" fill="#34D399" filter="url(#glow3d)"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 4 Feature Discovery Cards (Figma Spec) -->
+        <div class="features-4col">
+          <div class="feature-mini-card" onclick="switchView('analyze')">
+            <div class="feature-mini-icon" style="background:#F0FDFA;color:var(--primary);">🧠</div>
+            <div class="feature-mini-h">AI Recommendation</div>
+            <div class="feature-mini-p">Multi-factor matching of moisture, lipids, and respiration kinetics.</div>
+          </div>
+          <div class="feature-mini-card" onclick="switchView('materials')">
+            <div class="feature-mini-icon" style="background:#EFF6FF;color:#2563EB;">📦</div>
+            <div class="feature-mini-h">Material Selection</div>
+            <div class="feature-mini-p">128 engineered poly films, metallized foils, and bioplastics.</div>
+          </div>
+          <div class="feature-mini-card" onclick="switchView('shelflife')">
+            <div class="feature-mini-icon" style="background:#FFFBEB;color:#D97706;">📈</div>
+            <div class="feature-mini-h">Shelf-Life Analysis</div>
+            <div class="feature-mini-p">Kinetic deterioration simulation vs unsealed baseline produce.</div>
+          </div>
+          <div class="feature-mini-card" onclick="switchView('sustainability')">
+            <div class="feature-mini-icon" style="background:#F0FDF4;color:var(--secondary);">🌱</div>
+            <div class="feature-mini-h">Sustainability</div>
+            <div class="feature-mini-p">Circular recyclability index &amp; carbon footprint scoring.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           SCREEN 03, 04, 05, 06: STEPPER ANALYSIS FLOW
+      =============================================== -->
+      <section id="view-analyze" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title">Food Packaging Analysis</span>
+        </div>
+
+        <!-- Stepper Navigation Header -->
+        <div class="stepper-nav">
+          <div class="step-node active" id="step-btn-1" onclick="jumpToStep(1)">
+            <div class="step-circle" id="circle-1">1</div>
+            <div class="step-label" data-i18n="step_1_label">Food Properties</div>
+          </div>
+          <div class="step-divider" id="div-1"></div>
+          <div class="step-node" id="step-btn-2" onclick="jumpToStep(2)">
+            <div class="step-circle" id="circle-2">2</div>
+            <div class="step-label" data-i18n="step_2_label">Storage &amp; Transit</div>
+          </div>
+          <div class="step-divider" id="div-2"></div>
+          <div class="step-node" id="step-btn-3" onclick="jumpToStep(3)">
+            <div class="step-circle" id="circle-3">3</div>
+            <div class="step-label" data-i18n="step_3_label">AI Analysis</div>
+          </div>
+          <div class="step-divider" id="div-3"></div>
+          <div class="step-node" id="step-btn-4" onclick="jumpToStep(4)">
+            <div class="step-circle" id="circle-4">4</div>
+            <div class="step-label" data-i18n="step_4_label">Recommendation</div>
+          </div>
+        </div>
+
+        <!-- STEP 1: FOOD PROPERTIES -->
+        <div id="step-content-1">
+          <div class="card">
+            <div class="card-title">
+              <span>Step 1 — Select Food Commodity</span>
+              <span style="font-size:0.8rem;color:var(--primary);font-weight:600;"><span data-i18n="step1_subtitle">Choose preset or customize</span></span>
+            </div>
+
+            <!-- Search box -->
+            <div class="commodity-search-box">
+              <input type="text" id="food_search" class="search-input" placeholder="🔍 Search food commodity (e.g. Tomato, Mango, Paneer, Chicken, Chips)..." data-i18n-ph="search_ph" oninput="filterCommoditySearch()">
+            </div>
+
+            <!-- Popular Badges -->
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;">Popular Commodities:</div>
+            <div class="badge-cloud" id="popular-badges">
+              <div class="food-badge selected" onclick="pickPreset(this, 'Tomato', 94, 4.3, 0.2, 'High', 'Fresh', 21, 8, 90)"><span data-i18n="badge_tomato">🍅 Tomato</span></div>
+              <div class="food-badge" onclick="pickPreset(this, 'Potato Chips', 2, 5.8, 35, 'None', 'Processed', 120, 25, 50)"><span data-i18n="badge_chips">🥔 Potato Chips</span></div>
+              <div class="food-badge" onclick="pickPreset(this, 'Apple', 85, 3.8, 0.3, 'Medium', 'Fresh', 45, 4, 90)"><span data-i18n="badge_apple">🍎 Apple</span></div>
+              <div class="food-badge" onclick="pickPreset(this, 'Fresh Milk', 88, 6.7, 3.8, 'None', 'Liquid', 7, 4, 80)"><span data-i18n="badge_milk">🥛 Milk</span></div>
+              <div class="food-badge" onclick="pickPreset(this, 'Fresh Chicken', 74, 5.9, 14, 'None', 'Fresh', 8, 2, 85)"><span data-i18n="badge_chicken">🍗 Chicken</span></div>
+              <div class="food-badge" onclick="pickPreset(this, 'Dairy Paneer', 54, 6.1, 22, 'None', 'Processed', 18, 4, 85)"><span data-i18n="badge_paneer">🧀 Paneer</span></div>
+              <div class="food-badge" onclick="pickPreset(this, 'Wheat Flour', 13, 6.4, 1.2, 'None', 'Powder', 180, 25, 60)"><span data-i18n="badge_flour">🌾 Flour</span></div>
+            </div>
+
+            <!-- Properties Inputs -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">
+                  <span><span data-i18n="lbl_moisture">Moisture Content</span></span>
+                  <span class="form-val-display" id="disp-moisture">94 %</span>
+                </label>
+                <input type="range" id="input-moisture" min="1" max="99" value="94" oninput="updateVal('moisture', '%')">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <span><span data-i18n="lbl_ph">pH Acidity</span></span>
+                  <span class="form-val-display" id="disp-ph">4.3</span>
+                </label>
+                <input type="range" id="input-ph" min="2.0" max="9.0" step="0.1" value="4.3" oninput="updateVal('ph', '')">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">
+                  <span><span data-i18n="lbl_fat">Oil / Fat Content</span></span>
+                  <span class="form-val-display" id="disp-fat">0.2 %</span>
+                </label>
+                <input type="range" id="input-fat" min="0" max="100" step="0.1" value="0.2" oninput="updateVal('fat', '%')">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"><span data-i18n="lbl_resp">Respiration Rate</span></label>
+                <select id="input-resp" class="input-field">
+                  <option value="High" selected>High (e.g. Tomatoes, Spinach, Mushrooms)</option>
+                  <option value="Medium">Medium (e.g. Mango, Apple, Peach)</option>
+                  <option value="Low">Low (e.g. Citrus, Potato, Onion)</option>
+                  <option value="None">None (Processed, Meat, Bakery, Liquids)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:8px;">
+              <label class="form-label"><span data-i18n="lbl_prod_form">Product Form</span></label>
+              <div class="segmented-control" id="product-type-ctrl">
+                <div class="segmented-btn active" onclick="setProductType(this, 'Fresh')">Fresh Produce</div>
+                <div class="segmented-btn" onclick="setProductType(this, 'Processed')">Processed / Solid</div>
+                <div class="segmented-btn" onclick="setProductType(this, 'Powder')">Powder / Granular</div>
+                <div class="segmented-btn" onclick="setProductType(this, 'Liquid')">Liquid / Paste</div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+              <button class="btn btn-primary" onclick="goToStep(2)">
+                <span data-i18n="btn_continue_step2">Continue to Storage &amp; Transport →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: STORAGE & TRANSPORTATION -->
+        <div id="step-content-2" style="display:none;">
+          <div class="form-grid-2">
+            
+            <!-- Storage Card -->
+            <div class="card" style="margin-bottom:0;">
+              <div class="card-title">
+                <span><span data-i18n="step2_storage_title">Storage Conditions</span></span>
+                <span>🏪</span>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Temperature (°C)</label>
+                  <input type="number" id="input-temp" class="input-field" value="8">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Relative Humidity (%)</label>
+                  <input type="number" id="input-rh" class="input-field" value="90">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label">Storage Regime</label>
+                <div class="segmented-control" id="storage-type-ctrl">
+                  <div class="segmented-btn" onclick="setStorageRegime(this, 'Ambient', 25)">Ambient</div>
+                  <div class="segmented-btn active" onclick="setStorageRegime(this, 'Chilled', 8)">Chilled (0-8°C)</div>
+                  <div class="segmented-btn" onclick="setStorageRegime(this, 'Frozen', -18)">Frozen (-18°C)</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Desired Target Shelf Life (Days)</label>
+                <input type="number" id="input-shelflife" class="input-field" value="15" min="1" max="730">
+              </div>
+            </div>
+
+            <!-- Transportation Card -->
+            <div class="card" style="margin-bottom:0;">
+              <div class="card-title">
+                <span>Transportation Logistics</span>
+                <span>🚛</span>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Duration (Days)</label>
+                  <input type="number" id="input-duration" class="input-field" value="5">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Distance (km)</label>
+                  <input type="number" id="input-distance" class="input-field" value="800">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label">Transport Mode</label>
+                <select id="input-transport-type" class="input-field">
+                  <option value="Reefer" selected>Reefer Truck (Cold-chain active)</option>
+                  <option value="Truck">Standard Road Truck (Uncooled)</option>
+                  <option value="Rail">Rail Cargo (Ambient)</option>
+                  <option value="Air">Air Freight (Export Express)</option>
+                </select>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Temp Variation Risk</label>
+                  <select id="input-temp-var" class="input-field">
+                    <option value="Medium" selected>Medium Risk</option>
+                    <option value="Low">Low (Strict Cold Chain)</option>
+                    <option value="High">High (Ambient extremes)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Vibration / Puncture Risk</label>
+                  <select id="input-vibration" class="input-field">
+                    <option value="High" selected>High (Rough roads)</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div style="display:flex;justify-content:space-between;margin-top:20px;">
+            <button class="btn btn-secondary" onclick="goToStep(1)">
+              <span data-i18n="btn_back_step1">← Back to Food Properties</span>
+            </button>
+            <button class="btn btn-ai" onclick="runAIAnalysis()">
+              <span>⚡ Execute AI Packaging Engine</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: VISUAL AI ANALYZING ANIMATION SCREEN -->
+        <div id="step-content-3" style="display:none;">
+          <div class="ai-loading-container">
+            <div class="ai-radar-ring">
+              <div class="ai-radar-core">
+                <span style="font-size:0.75rem;letter-spacing:0.05em;">AI ENGINE</span>
+                <span style="font-size:1.15rem;" id="ai-progress-text">87%</span>
+              </div>
+            </div>
+
+            <h2 style="font-size:1.35rem;font-weight:800;color:var(--dark);margin-bottom:6px;">
+              <span data-i18n="step3_analyzing_h">Analyzing Packaging Compatibility...</span>
+            </h2>
+            <p style="font-size:0.88rem;color:var(--text-muted);">
+              Correlating moisture kinetics, gas exchange, and barrier permeabilities with 128 polymer specifications.
+            </p>
+
+            <div class="ai-checklist">
+              <div class="ai-check-item">
+                <span>Food Physico-Chemical Properties</span>
+                <span class="check-mark">✓ Complete</span>
+              </div>
+              <div class="ai-check-item">
+                <span>Storage &amp; Transport Environmental Stress</span>
+                <span class="check-mark">✓ Complete</span>
+              </div>
+              <div class="ai-check-item">
+                <span>Packaging Barrier Knowledge Base</span>
+                <span class="check-mark">✓ Complete</span>
+              </div>
+              <div class="ai-check-item">
+                <span>Compatibility &amp; Puncture Resistance</span>
+                <span class="check-mark" id="check-compat">✓ Complete</span>
+              </div>
+              <div class="ai-check-item">
+                <span>Sustainability &amp; Recyclability Scoring</span>
+                <span class="check-mark" id="check-sustain" style="color:var(--ai-accent);">Processing...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: RECOMMENDATION RESULT SCREEN -->
+        <div id="step-content-4" style="display:none;">
+          
+          <!-- Recommendation Hero Card -->
+          <div class="rec-hero-card">
+            <div class="rec-top-meta">
+              <div class="rec-pill"><span data-i18n="rec_complete_pill">AI ANALYSIS COMPLETE ✓</span></div>
+              <div style="font-size:0.85rem;color:#CCFBF1;font-weight:600;" id="rec-headline-meta">
+                Tomato • Chilled • 8°C • 15 Days
+              </div>
+            </div>
+
+            <div style="font-size:0.8rem;text-transform:uppercase;color:#A7F3D0;font-weight:700;letter-spacing:0.05em;margin-bottom:4px;">
+              <span data-i18n="rec_winner_label">RECOMMENDED PACKAGING MATERIAL</span>
+            </div>
+            <h2 class="rec-main-title" id="rec-winner-name">
+              🍅 Breathable / Micro-perforated BOPP Film
+            </h2>
+            <p class="rec-sub-text" id="rec-winner-desc">
+              Engineered with laser micro-perforations to allow controlled O₂/CO₂ respiration equilibrium, preventing anaerobic off-flavor accumulation and condensation-induced microbial decay.
+            </p>
+
+            <div class="rec-score-bar-wrap">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                <span style="font-size:0.82rem;font-weight:600;color:#E6FFFA;">Compatibility Score:</span>
+                <span class="rec-score-num" id="rec-winner-score">91%</span>
+              </div>
+              <div class="rec-score-progress">
+                <div class="rec-score-fill" id="rec-winner-bar" style="width: 91%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6 Packaging Specification Cards -->
+          <div class="spec-cards-grid">
+            <div class="spec-card">
+              <div class="spec-card-lbl"><span data-i18n="spec_otr_lbl">OTR (Oxygen Transmission)</span></div>
+              <div class="spec-card-val" id="spec-val-otr">LOW / CONT.</div>
+              <div class="spec-card-sub" id="spec-sub-otr">3,500 cc/m²/24h·atm</div>
+            </div>
+            <div class="spec-card">
+              <div class="spec-card-lbl">WVTR (Moisture Vapor)</div>
+              <div class="spec-card-val" id="spec-val-wvtr">MEDIUM</div>
+              <div class="spec-card-sub" id="spec-sub-wvtr">25 g/m²/24h</div>
+            </div>
+            <div class="spec-card">
+              <div class="spec-card-lbl"><span data-i18n="spec_thick_lbl">Film Thickness</span></div>
+              <div class="spec-card-val" id="spec-val-thick">40–60 µm</div>
+              <div class="spec-card-sub">Multi-layer co-ex</div>
+            </div>
+            <div class="spec-card">
+              <div class="spec-card-lbl">Sealability</div>
+              <div class="spec-card-val" id="spec-val-seal">HIGH</div>
+              <div class="spec-card-sub">120 - 135°C Heat seal</div>
+            </div>
+            <div class="spec-card">
+              <div class="spec-card-lbl"><span data-i18n="spec_map_lbl">MAP Suitability</span></div>
+              <div class="spec-card-val" id="spec-val-map" style="color:var(--primary);">SUITABLE</div>
+              <div class="spec-card-sub" id="spec-sub-map">Equilibrium Active</div>
+            </div>
+            <div class="spec-card">
+              <div class="spec-card-lbl"><span data-i18n="spec_mech_lbl">Mechanical Strength</span></div>
+              <div class="spec-card-val" id="spec-val-strength">HIGH</div>
+              <div class="spec-card-sub">Tensile &gt; 120 MPa</div>
+            </div>
+          </div>
+
+          <!-- Section 8: "Why this packaging?" Explainable AI -->
+          <div class="why-section">
+            <div class="why-title">
+              <span>💡</span><span>WHY THIS RECOMMENDATION? (Explainable AI Logic)</span>
+            </div>
+            <div class="why-chain">
+              <div class="why-box">
+                <div class="why-box-h"><span>🫧</span><span id="why-cause-title">High Respiration</span></div>
+                <div class="why-box-p" id="why-cause-desc">Product consumes O₂ and produces CO₂ actively even after harvesting.</div>
+              </div>
+              <div class="why-arrow">→</div>
+              <div class="why-box">
+                <div class="why-box-h"><span>⚖️</span><span>Equilibrium Need</span></div>
+                <div class="why-box-p" id="why-need-desc">Headspace gas must balance at 3-5% O₂ to prevent anaerobic fermentation.</div>
+              </div>
+              <div class="why-arrow">→</div>
+              <div class="why-box">
+                <div class="why-box-h"><span>🌬️</span><span id="why-action-title">Breathable Packaging</span></div>
+                <div class="why-box-p" id="why-action-desc">Laser micro-perforations provide exact calculated gas permeation rates.</div>
+              </div>
+            </div>
+          </div>
+
+          
+                    <!-- 3-Tier Scientific Architecture Pipeline: Formula Engine + Gemini AI Auditor + Gemini Explainer -->
+          <div class="three-tier-pipeline" style="margin-bottom:24px;">
+
+            <!-- TIER 1: FORMULA ENGINE -->
+            <div class="card tier-panel" style="background:#F8FAFC;border:1.5px solid #0F766E;border-left:5px solid #0F766E;">
+              <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <span style="color:#0F766E;font-size:0.95rem;font-weight:700;">
+                  📐 Tier 1: Formula Engine (Sole Mathematical Authority)
+                </span>
+                <span class="preview-badge" style="background:#CCFBF1;color:#0F766E;font-weight:700;" id="calc-confidence-badge">
+                  Math Derivation: Computed
+                </span>
+              </div>
+              <div style="font-size:0.82rem;color:#334155;line-height:1.6;">
+                <div id="calc-governing-eq-container">
+                  <!-- Dynamically populated by Formula Engine -->
+                </div>
+                <div id="calc-maut-derivation-container">
+                  <!-- Dynamic MAUT Derivation -->
+                </div>
+              </div>
+            </div>
+
+            <!-- TIER 2: GEMINI AI AUDITOR -->
+            <div class="card tier-panel" style="background:#F0FDFA;border:1.5px solid #0284C7;border-left:5px solid #0284C7;">
+              <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span style="color:#0369A1;font-size:0.95rem;font-weight:700;">
+                  🤖 <span data-i18n="tier2_title">Tier 2: Gemini AI Auditor (Independent Scientific Audit)</span>
+                </span>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <span class="preview-badge" style="background:#E0F2FE;color:#0369A1;font-size:0.75rem;" id="gemini-audit-source">
+                    Gemini AI Auditor
+                  </span>
+                  <span class="preview-badge" style="background:#DCFCE7;color:#15803D;font-weight:700;" id="gemini-audit-status">
+                    AUDIT: VALID ✓
+                  </span>
+                </div>
+              </div>
+              <div style="font-size:0.80rem;color:#475569;margin-bottom:12px;font-style:italic;" id="gemini-authority-note">
+                Formula Engine remains the sole authority for numerical outputs. Gemini API independently audited mathematical consistency, boundary units, and physical assumptions.
+              </div>
+              <div id="gemini-audit-checks-container" style="display:grid;grid-template-columns:1fr;gap:8px;">
+                <!-- 5 Verification checks populated dynamically -->
+              </div>
+            </div>
+
+            <!-- TIER 3: GEMINI SCIENTIFIC EXPLAINER & DOMAIN REASONING -->
+            <div class="card tier-panel" style="background:#FFFBEB;border:1.5px solid #F59E0B;border-left:5px solid #F59E0B;">
+              <div class="card-title" style="margin-bottom:10px;">
+                <span style="color:#B45309;font-size:0.95rem;font-weight:700;">
+                  💡 Tier 3: Gemini Scientific Explanation &amp; Domain Reasoning
+                </span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.80rem;line-height:1.55;">
+                <div style="background:white;padding:12px 14px;border-radius:8px;border:1px solid #FDE68A;">
+                  <div style="font-weight:700;color:#92400E;margin-bottom:4px;">Why This Numerical Result?</div>
+                  <div id="gemini-why-result" style="color:#475569;">Calculated by physical mass-balance kinetics matching food degradation pathways.</div>
+                </div>
+                <div style="background:white;padding:12px 14px;border-radius:8px;border:1px solid #FDE68A;">
+                  <div style="font-weight:700;color:#92400E;margin-bottom:4px;">Why This Packaging Material?</div>
+                  <div id="gemini-why-material" style="color:#475569;">Selected to satisfy barrier cutoff and mechanical durability against transit stresses.</div>
+                </div>
+              </div>
+              <div style="margin-top:12px;background:white;padding:10px 14px;border-radius:8px;border:1px solid #FDE68A;font-size:0.75rem;color:#78350F;">
+                <strong>Critical Engineering Assumptions &amp; Standards:</strong>
+                <ul id="gemini-assumptions-list" style="margin:4px 0 0 16px;padding:0;">
+                  <li>Model assumptions require empirical barrier permeation validation (ASTM D3985 / ASTM F1249).</li>
+                  <li>Overall migration conformance must be verified under IS 9845 prior to commercial packing.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="goToStep(1)">
+              ← <span data-i18n="btn_modify_params">Modify Parameters</span>
+            </button>
+            <button class="btn btn-secondary" onclick="switchView('compare')">
+              <span data-i18n="btn_view_compare">⚖️ View Side-by-Side Comparison</span>
+            </button>
+            <button class="btn btn-secondary" onclick="switchView('sustainability')">
+              <span data-i18n="btn_check_sustain">🌱 Check Sustainability Score</span>
+            </button>
+            <button class="btn btn-primary" onclick="switchView('reports')">
+              <span data-i18n="btn_gen_pdf">📋 Generate A4 Technical PDF Report</span>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ==============================================
+           SCREEN 07: PACKAGING COMPARISON SCREEN
+      =============================================== -->
+      <section id="view-compare" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title" data-i18n="cmp_breadcrumb">Packaging Comparison Simulator</span>
+        </div>
+
+        <div class="page-header">
+          <h1><span data-i18n="cmp_header_h">Packaging Comparison &amp; Trade-Off Simulator ⚖️</span></h1>
+          <p data-i18n="cmp_header_sub">Side-by-side evaluation of primary recommendation against viable polymer alternatives.</p>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div class="table-responsive">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th style="width:25%;" data-i18n="cmp_col_metric">Comparison Metric</th>
+                <th style="width:25%;" class="col-highlight" data-i18n="cmp_col_opt_a">Option A (AI Primary)</th>
+                <th style="width:25%;" data-i18n="cmp_col_opt_b">Option B (Secondary)</th>
+                <th style="width:25%;" data-i18n="cmp_col_opt_c">Option C (Economic)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong data-i18n="cmp_row_mat">Material Description</strong></td>
+                <td class="col-highlight" id="cmp-mat-a">Micro-Perforated BOPP</td>
+                <td id="cmp-mat-b">Macro-Perforated LDPE</td>
+                <td id="cmp-mat-c">Biodegradable PLA</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="cmp_row_otr">OTR Gas Barrier</strong></td>
+                <td class="col-highlight" id="cmp-otr-a">Controlled Breathable</td>
+                <td id="cmp-otr-b">High Permeability</td>
+                <td id="cmp-otr-c">Moderate</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="cmp_row_wvtr">WVTR Moisture Barrier</strong></td>
+                <td class="col-highlight" id="cmp-wvtr-a">Medium (25 g/m²)</td>
+                <td id="cmp-wvtr-b">High (40 g/m²)</td>
+                <td id="cmp-wvtr-c">Low (15 g/m²)</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="cmp_row_cost">Relative Cost / kg</strong></td>
+                <td class="col-highlight" id="cmp-cost-a">₹130 (Moderate)</td>
+                <td id="cmp-cost-b">₹90 (Low)</td>
+                <td id="cmp-cost-c">₹220 (Premium)</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="cmp_row_strength">Mechanical Tensile Strength</strong></td>
+                <td class="col-highlight" id="cmp-strength-a">High (&gt;120 MPa)</td>
+                <td id="cmp-strength-b">Medium (25 MPa)</td>
+                <td id="cmp-strength-c">High (60 MPa)</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="cmp_row_shelf">Projected Usable Shelf-Life</strong></td>
+                <td class="col-highlight" style="color:var(--primary);font-weight:700;" id="cmp-shelf-a">15–21 Days</td>
+                <td id="cmp-shelf-b">8–10 Days</td>
+                <td id="cmp-shelf-c">12–14 Days</td>
+              </tr>
+              <tr>
+                <td><strong data-i18n="cmp_row_sustain">Sustainability Score</strong></td>
+                <td class="col-highlight" id="cmp-sustain-a">75 / 100</td>
+                <td id="cmp-sustain-b">60 / 100</td>
+                <td id="cmp-sustain-c">92 / 100 (Bio)</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- Trade-off Analysis Bars -->
+        <div class="card">
+          <div class="card-title" data-i18n="cmp_tradeoff_h">Trade-off Analysis Summary</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;font-weight:600;margin-bottom:4px;">
+                <span data-i18n="cmp_bar_prot">Protection &amp; Barrier Fit:</span>
+                <span>92 / 100</span>
+              </div>
+              <div style="height:10px;background:#E2E8F0;border-radius:999px;overflow:hidden;">
+                <div style="width:92%;height:100%;background:var(--primary);border-radius:999px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;font-weight:600;margin-bottom:4px;">
+                <span data-i18n="cmp_bar_cost">Cost Efficiency:</span>
+                <span>78 / 100</span>
+              </div>
+              <div style="height:10px;background:#E2E8F0;border-radius:999px;overflow:hidden;">
+                <div style="width:78%;height:100%;background:var(--secondary);border-radius:999px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.82rem;font-weight:600;margin-bottom:4px;">
+                <span data-i18n="cmp_bar_sus">Sustainability &amp; Recyclability:</span>
+                <span>68 / 100</span>
+              </div>
+              <div style="height:10px;background:#E2E8F0;border-radius:999px;overflow:hidden;">
+                <div style="width:68%;height:100%;background:var(--warning);border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           SCREEN 08: SUSTAINABILITY DASHBOARD
+      =============================================== -->
+      <section id="view-sustainability" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title" data-i18n="sus_breadcrumb">Sustainability &amp; Eco-Score</span>
+        </div>
+
+        <div class="page-header">
+          <h1><span data-i18n="sus_header_h">Sustainability &amp; Eco-Profile 🌱</span></h1>
+          <p data-i18n="sus_header_sub">Circular economy metrics, polymer recyclability indices, and carbon impact indicators.</p>
+        </div>
+
+        <div class="card">
+          <div class="sustain-wrap">
+            <div class="circle-score-card">
+              <div class="score-circle-modern">
+                <div class="score-circle-inner">
+                  <div class="score-circle-num" id="sustain-main-num">75</div>
+                  <div class="score-circle-sub">/ 100</div>
+                </div>
+              </div>
+              <div style="font-size:0.85rem;font-weight:800;color:var(--dark);" data-i18n="sus_card_score_lbl">SUSTAINABILITY SCORE</div>
+              <div style="font-size:0.7rem;color:var(--text-light);margin-top:4px;">
+                <span data-i18n="sus_card_score_note">*Model / database predictive score</span>
+              </div>
+            </div>
+
+            <div class="sustain-metrics-list">
+              <div class="sbar-row">
+                <div class="sbar-head"><span data-i18n="sus_metric_rec">♻️ Recyclability Index</span><span>85%</span></div>
+                <div class="sbar-track"><div class="sbar-fill" style="width:85%;"></div></div>
+              </div>
+              <div class="sbar-row">
+                <div class="sbar-head"><span data-i18n="sus_metric_bio">🌱 Biodegradability &amp; Bio-content</span><span>62%</span></div>
+                <div class="sbar-track"><div class="sbar-fill" style="width:62%;background:var(--primary);"></div></div>
+              </div>
+              <div class="sbar-row">
+                <div class="sbar-head"><span data-i18n="sus_metric_opt">📦 Material Gauge Optimization</span><span>78%</span></div>
+                <div class="sbar-track"><div class="sbar-fill" style="width:78%;"></div></div>
+              </div>
+              <div class="sbar-row">
+                <div class="sbar-head"><span data-i18n="sus_metric_wred">🗑️ Waste Reduction Impact</span><span>70%</span></div>
+                <div class="sbar-track"><div class="sbar-fill" style="width:70%;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="background:#F0FDF4;border-color:#BBF7D0;">
+          <h3 style="font-size:0.95rem;font-weight:700;color:#166534;margin-bottom:6px;">
+            <span data-i18n="sus_note_h">🌿 Circular Economy Compliance Note</span>
+          </h3>
+          <p style="font-size:0.82rem;color:#15803D;line-height:1.5;">
+            <span data-i18n="sus_note_p">Aligns with Plastic Waste Management Rules (PWMR 2022) &amp; Extended Producer Responsibility (EPR) targets. Certified mono-material structures qualify for 100% mechanical regranulation in domestic recycling facilities.</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           SCREEN 09: SHELF-LIFE ANALYSIS MODEL
+      =============================================== -->
+      <section id="view-shelflife" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title" data-i18n="shelf_breadcrumb">Shelf-Life Extension Model</span>
+        </div>
+
+        <div class="page-header">
+          <h1><span data-i18n="shelf_header_h">Shelf-Life Extension Model 📈</span></h1>
+          <p data-i18n="shelf_header_sub">Interactive kinetic deterioration simulation comparing unsealed baseline vs generic poly vs AI-engineered packaging.</p>
+        </div>
+
+        <!-- Shelf Life Commodity Quick Selector -->
+        <div class="card" style="padding:16px 20px;margin-bottom:18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div style="font-size:0.82rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.04em;">
+              <span data-i18n="shelf_select_lbl">Select Product to Simulate:</span>
+            </div>
+            <div class="badge-cloud" style="margin-bottom:0;" id="shelflife-pills">
+              <div class="food-badge selected" onclick="simulateShelfLife(this, 'Tomato', 4, 9, 21, 'Active respiration, ethylene softening & transpirational moisture loss', 'Laser micro-perforated EMAP (16,800 cc OTR) balances O2/CO2')">🍅 Tomato (21d)</div>
+              <div class="food-badge" onclick="simulateShelfLife(this, 'Potato Chips', 15, 45, 120, 'Unsaturated lipid oxidation (hexanal rancidity) & moisture crispness loss', 'Met-PET high moisture/gas barrier with 100% N2 gas flush')">🥔 Chips (120d)</div>
+              <div class="food-badge" onclick="simulateShelfLife(this, 'Fresh Meat', 2, 4, 10, 'Psychrotrophic Pseudomonas bacterial growth & metmyoglobin oxidation', 'PA/EVOH thermoformed pouch with 30% CO2 / 70% N2 antimicrobial atmosphere')">🥩 Meat (10d)</div>
+              <div class="food-badge" onclick="simulateShelfLife(this, 'Paneer', 3, 7, 18, 'Proteolytic bacterial spoilage & surface mold colonization', 'High-barrier vacuum seal with light cutoff')">🧀 Paneer (18d)</div>
+              <div class="food-badge" onclick="simulateShelfLife(this, 'Bread', 3, 6, 12, 'Starch retrogradation (staling) & Rhizopus mold germination', 'Anti-fog micro-vented polyolefin film')">🍞 Bread (12d)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="height:280px;position:relative;">
+            <canvas id="dashboardShelfChart"></canvas>
+          </div>
+          <div style="display:flex;justify-content:space-around;margin-top:20px;text-align:center;">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">UNPACKAGED BASELINE</div>
+              <div style="font-size:1.4rem;font-weight:800;color:var(--danger);" id="shelf-days-base">4 Days</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">GENERIC POLYETHYLENE</div>
+              <div style="font-size:1.4rem;font-weight:800;color:var(--warning);" id="shelf-days-gen">9 Days</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">AI OPTIMIZED BARRIER</div>
+              <div style="font-size:1.4rem;font-weight:800;color:var(--primary);" id="shelf-days-opt">21 Days</div>
+            </div>
+          </div>
+
+          <div id="shelf-kinetic-explainer" style="background:#F8FAFC;padding:12px 16px;border-radius:8px;border:1px solid #E2E8F0;margin-top:18px;font-size:0.80rem;line-height:1.5;">
+            <div style="margin-bottom:4px;"><strong>Target Spoilage Mechanism:</strong> <span id="shelf-mech-desc" style="color:#475569;">Active respiration, ethylene softening & transpirational moisture loss</span></div>
+            <div><strong>Engineered Packaging Solution:</strong> <span id="shelf-action-desc" style="color:var(--primary);font-weight:700;">Laser micro-perforated EMAP (16,800 cc OTR) balances O2/CO2</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           SCREEN 10: MATERIALS KNOWLEDGE BASE
+      =============================================== -->
+      <section id="view-materials" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title" data-i18n="mat_breadcrumb">Materials Knowledge Base</span>
+        </div>
+
+        <div class="page-header">
+          <h1><span data-i18n="mat_header_h">Packaging Materials Knowledge Base 📦</span></h1>
+          <p data-i18n="mat_header_sub">Certified food-contact polymer database categorized by permeability, barrier grades, and applications.</p>
+        </div>
+
+        <!-- Materials Filter & Search Bar -->
+        <div class="card" style="padding:16px 20px;margin-bottom:20px;">
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="mat_search_input" class="search-input" style="max-width:320px;padding:8px 14px;" placeholder="🔍 Filter materials (e.g. BOPP, EVOH, PLA)..." data-i18n-ph="mat_search_ph" oninput="filterMaterialsList()">
+            <div class="segmented-control" style="flex:1;max-width:540px;" id="mat-filter-ctrl">
+              <div class="segmented-btn active" onclick="filterMaterialCat(this, 'all')" data-i18n="mat_filter_all">All Materials</div>
+              <div class="segmented-btn" onclick="filterMaterialCat(this, 'produce')" data-i18n="mat_filter_produce">Produce Films</div>
+              <div class="segmented-btn" onclick="filterMaterialCat(this, 'barrier')" data-i18n="mat_filter_barrier">High Barrier</div>
+              <div class="segmented-btn" onclick="filterMaterialCat(this, 'eco')" data-i18n="mat_filter_eco">Bioplastics</div>
+              <div class="segmented-btn" onclick="filterMaterialCat(this, 'rigid')" data-i18n="mat_filter_rigid">Rigid / Semis</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;" id="materials-card-list">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- ==============================================
+           SCREEN 11: A4 PRINTABLE REPORT PREVIEW
+      =============================================== -->
+      <section id="view-reports" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title" data-i18n="rep_breadcrumb">A4 Technical Report Preview</span>
+        </div>
+
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h1><span data-i18n="rep_header_h">Official Packaging Analysis Report 📋</span></h1>
+            <p data-i18n="rep_header_sub">A4 technical documentation format prepared for production and compliance submission.</p>
+          </div>
+          <button class="btn btn-primary" onclick="window.print()" data-i18n="rep_btn_download">
+            📥 Download / Print PDF
+          </button>
+        </div>
+
+        <div class="report-sheet">
+          <div class="rep-header">
+            <div>
+              <div style="font-size:1.25rem;font-weight:900;color:var(--primary);">PACKWISE</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);"><span data-i18n="rep_mofpi_sub">Ministry of Food Processing Industries (MoFPI) Decision Support Report</span></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.82rem;font-weight:700;color:var(--primary);" id="rep-live-date">29 September 2026</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600;" id="rep-live-time">10:45:00 PM</div>
+              <div style="display:none;" id="rep-date"></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec1_h">1. COMMODITY &amp; LOGISTICS PARAMETERS</span></div>
+            <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
+              <tr>
+                <td style="padding:4px 0;width:30%;"><strong data-i18n="rep_lbl_food">Food Product:</strong> <span id="rep-prod-name">Tomato</span></td>
+                <td style="padding:4px 0;width:30%;"><strong data-i18n="rep_lbl_moist">Moisture Content:</strong> <span id="rep-moisture">94%</span></td>
+                <td style="padding:4px 0;width:30%;"><strong data-i18n="rep_lbl_fat">Fat Content:</strong> <span id="rep-fat">0.2%</span></td>
+              </tr>
+              <tr>
+                <td style="padding:4px 0;"><strong data-i18n="rep_lbl_ph">pH Level:</strong> <span id="rep-ph">4.3</span></td>
+                <td style="padding:4px 0;"><strong data-i18n="rep_lbl_storage">Storage Regime:</strong> <span id="rep-storage">Chilled (8°C, 90% RH)</span></td>
+                <td style="padding:4px 0;"><strong data-i18n="rep_lbl_shelf">Target Shelf-Life:</strong> <span id="rep-shelf">15 Days</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec2_h">2. PRIMARY MATERIAL RECOMMENDATION</span></div>
+            <div style="background:#F0FDFA;padding:12px 16px;border-radius:8px;border:1px solid #99F6E4;">
+              <div style="font-size:1.05rem;font-weight:800;color:var(--primary);" id="rep-rec-mat">
+                Laser Micro-Perforated BOPP Film
+              </div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;" id="rep-rec-desc">Laser micro-perforated film configured to balance O₂ transmission with active respiration rate.</div></div><div style="text-align:right;"><div style="font-size:0.72rem;color:var(--text-muted);font-weight:600;" data-i18n="rep_lbl_compat">COMPATIBILITY</div><div style="font-size:1.35rem;font-weight:900;color:var(--primary);" id="rep-confidence-score">91.1%</div></div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec3_h">3. TECHNICAL MATERIAL SPECIFICATIONS</span></div>
+            <table style="width:100%;font-size:0.82rem;border-collapse:collapse;">
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:6px 0;"><strong data-i18n="rep_lbl_otr">Oxygen Transmission (OTR):</strong></td>
+                <td id="rep-otr">16,800 cc/m²/24h·atm (Laser Micro-Perforated EMAP)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:6px 0;"><strong data-i18n="rep_lbl_wvtr">Water Vapor Transmission (WVTR):</strong></td>
+                <td id="rep-wvtr">25 g/m²/24h @ 38°C (ASTM F1249)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:6px 0;"><strong data-i18n="rep_lbl_thick">Thickness &amp; Structure:</strong></td>
+                <td id="rep-thick">BOPP 20µ // Microperforated // Sealable PE 20µ</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;"><strong data-i18n="rep_lbl_seal">Sealability &amp; Temperature:</strong></td>
+                <td id="rep-seal">Heat sealable @ 120 - 135°C (Seal Strength &gt; 18 N/15mm)</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Section 4: AI Calculation Basis & Mass-Balance Model -->
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec4_h">4. SCIENTIFIC FORMULA DERIVATION &amp; GEMINI AI AUDIT</span></div>
+            <div id="rep-sec4-container" style="background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.8rem;color:#334155;line-height:1.6;">
+              <div style="margin-bottom:8px;">
+                <strong>• Governing MAP Mass-Balance Permeability Equation:</strong><br>
+                <code style="background:#EEF2F6;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:2px;">
+                  OTR_req = (RR_O2 × Mass × 24) / [Area × ΔP_O2]
+                </code>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.77rem;color:#475569;">
+                <div>Produce Mass (M): <strong>500 g (0.50 kg)</strong></div>
+                <div>Breathable Area (A): <strong>0.06 m² (6 dm²)</strong></div>
+                <div>Storage Temperature: <strong>8°C</strong> (Steady chilled)</div>
+                <div>Target Headspace: <strong>3.5% O₂ / 5.0% CO₂ (Balance N₂)</strong></div>
+                <div>ΔP_O2 Gradient: <strong>0.1745 atm</strong> (20.95% ext - 3.5% int)</div>
+                <div>Respiration Rate: <strong>28 mg CO₂/kg·h @ 8°C</strong>*</div>
+              </div>
+              <div style="font-size:0.73rem;color:#64748B;margin-top:8px;border-top:1px dashed #CBD5E1;padding-top:6px;line-height:1.45;">
+                *<em>Basis: Model database / literature-derived input assuming aerobic respiratory quotient RQ ≈ 1.0 (1 mg CO₂ ≈ 0.524 cc O₂ at 8°C). Target film OTR: <strong>3,500 – 4,300 cc O₂/m²·day·atm</strong>* (*Final value depends on the selected respiration-rate basis, gas conversion assumptions, and package geometry).</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 5: Shelf-Life Projection & Validation -->
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec5_h">5. SHELF-LIFE PROJECTION &amp; COMMERCIAL VALIDATION</span></div>
+            <table style="width:100%;font-size:0.82rem;border-collapse:collapse;margin-bottom:8px;">
+              <tr style="background:#F8FAFC;border-bottom:1px solid var(--border);">
+                <td style="padding:6px 8px;width:33%;"><strong data-i18n="rep_lbl_base">Unpackaged Baseline:</strong> <span id="rep-shelf-base">~4 Days*</span></td>
+                <td style="padding:6px 8px;width:33%;"><strong data-i18n="rep_lbl_gen">Generic Monolayer Poly:</strong> <span id="rep-shelf-gen">~9 Days*</span></td>
+                <td style="padding:6px 8px;width:33%;"><strong data-i18n="rep_lbl_opt">Model Projected Shelf-Life:</strong> <span id="rep-shelf-range" style="color:var(--primary);font-weight:700;">18 – 24 Days</span></td>
+              </tr>
+            </table>
+            <div style="font-size:0.75rem;color:#475569;margin-bottom:6px;">
+              <strong>Model Basis:</strong> Michaelis-Menten-type respiration response with Q₁₀ = 2.0 as a model assumption. (*Baseline values estimated from published post-harvest literature at 8°C).
+            </div>
+            <div style="font-size:0.73rem;color:#64748B;background:#FFFBEB;border:1px solid #FDE68A;padding:8px 10px;border-radius:6px;line-height:1.45;">
+              <span data-i18n="rep_val_notice">⚠️ Commercial Validation Notice:</span> This is a predictive decision-support estimate. Actual commercial shelf life depends on cultivar, maturity index, initial microbial load, package geometry, temperature history, and sealing/perforation characteristics. Experimental validation is required before commercial deployment.
+            </div>
+          </div>
+
+          <!-- Section 6: Sustainability Score & Weighting Formula -->
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec6_h">6. CIRCULAR SUSTAINABILITY EVALUATION</span></div>
+            <div style="font-size:0.8rem;color:#334155;line-height:1.5;margin-bottom:8px;">
+              <strong>Model Composite Sustainability Score:</strong> <span style="font-weight:800;color:var(--secondary-dark);" id="rep-composite-sus-score">75 / 100</span> (*Model database score)
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.73rem;color:#475569;margin-top:6px;background:#F1F5F9;padding:8px 12px;border-radius:6px;line-height:1.6;">
+                • Recyclability Index: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;85 × 0.35 = 29.75<br>
+                • Bio-content / Origin: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;62 × 0.25 = 15.50<br>
+                • Material Optimization: &nbsp;&nbsp;&nbsp;&nbsp;78 × 0.20 = 15.60<br>
+                • Waste Reduction Impact: &nbsp;&nbsp;&nbsp;70 × 0.20 = 14.00<br>
+                ------------------------------------------------<br>
+                <strong>Composite Score: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;74.85 ≈ 75 / 100</strong>
+              </div>
+            </div>
+            <div style="font-size:0.75rem;color:#475569;line-height:1.45;">
+              <strong>End-of-Life:</strong> PP-based mono-material structure.<br>
+              <strong>Recyclability Status:</strong> Potentially mechanically recyclable where appropriate PP collection, sorting, and mechanical recycling infrastructure is available. Actual recyclability depends on municipal and regional post-consumer polyolefin collection and recycling infrastructure.
+            </div>
+          </div>
+
+          <!-- Section 7: Regulatory & Food-Contact Compliance Advisory -->
+          <div style="margin-bottom:20px;">
+            <div class="rep-section-h"><span data-i18n="rep_sec7_h">7. REGULATORY &amp; FOOD-CONTACT COMPLIANCE ADVISORY</span></div>
+            <div style="font-size:0.76rem;color:#475569;line-height:1.55;">
+              <p style="margin-bottom:6px;">
+                <strong>Applicable Regulatory Framework:</strong> Food Safety and Standards (Packaging) Regulations, 2018 and applicable amendments (including the 2022 amendments and the March 2025 amendment).
+              </p>
+              <p style="margin-bottom:6px;">
+                <strong>Migration Testing Requirements:</strong> Applicable overall and specific migration requirements must be satisfied. Testing according to <strong>IS 9845</strong> (<em>Determination of overall migration of constituents of plastic materials and articles intended to come into contact with foodstuffs</em>) applies, where overall migration must not exceed 60 mg/kg or 10 mg/dm² into designated food stimulants.
+              </p>
+              <p style="background:#F1F5F9;padding:6px 10px;border-radius:6px;border-left:3px solid var(--primary);">
+                <strong>Compliance Verification Status:</strong> Advisory / Pre-screening recommendation. Final compliance requires material specifications, supplier declarations of food-grade conformance, applicable migration test reports, and verification against current regulatory requirements.
+              </p>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--border);padding-top:14px;font-size:0.7rem;color:var(--text-light);display:flex;justify-content:space-between;">
+            <span data-i18n="rep_footer_l">Generated by PackWise Decision Support Tool</span>
+            <span data-i18n="rep_footer_r">Government of India · Ministry of Food Processing Industries</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================
+           SCREEN 12: SETTINGS & MODEL INFO
+      =============================================== -->
+      <section id="view-settings" class="page-view">
+        <div class="view-breadcrumb">
+          <button class="breadcrumb-back" onclick="switchView('dashboard')">
+            <span>←</span> Back to Dashboard
+          </button>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-title" data-i18n="settings_breadcrumb">System Settings</span>
+        </div>
+
+        <div class="page-header">
+          <h1><span data-i18n="settings_header_h">Settings &amp; Knowledge Base Configuration ⚙️</span></h1>
+          <p data-i18n="settings_header_sub">System configuration, database parameters, and algorithmic weight adjustment.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title" data-i18n="settings_engine_h">Engine Calibration</div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px;">
+            <span data-i18n="settings_engine_sub">Adjust optimization weights for the multi-factor multi-objective scoring algorithm.</span>
+          </p>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" data-i18n="settings_lbl_barrier_wt">Barrier Protection Weight</label>
+              <input type="range" min="1" max="100" value="45">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="settings_lbl_sus_wt">Sustainability Weight</label>
+              <input type="range" min="1" max="100" value="30">
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" data-i18n="settings_lbl_cost_wt">Cost Optimization Weight</label>
+              <input type="range" min="1" max="100" value="25">
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="settings_lbl_db_ver">Database Version</label>
+              <input type="text" class="input-field" value="MoFPI-DB v2.6.4 (Certified)" readonly>
+            </div>
+          </div>
+        </div>
+              <!-- Google Gemini 2.5 API Backend Configuration -->
+        <div class="card" style="margin-top:20px;border-left:4px solid #0284C7;">
+          <div class="card-title" style="color:#0369A1;display:flex;justify-content:space-between;align-items:center;">
+            <span data-i18n="settings_gemini_h">🤖 Google Gemini AI Auditor &amp; Explainer Integration</span>
+            <span class="preview-badge" style="background:#E0F2FE;color:#0369A1;" id="settings-gemini-status">Local Engine Active</span>
+          </div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px;">
+            <span data-i18n="settings_gemini_desc">The system operates with an autonomous deterministic scientific auditor by default. To connect live Google GenAI API for online audits, provide your API key below. The key is securely stored in the backend environment and never exposed to client-side code.</span>
+          </p>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <input type="password" id="input_gemini_api_key" class="input-field" style="max-width:420px;" placeholder="AQ.Ab8... (Google Gemini API Key)" data-i18n-ph="settings_key_ph">
+            <button class="btn btn-primary" onclick="saveGeminiApiKey()">
+              <span data-i18n="settings_btn_save">🔒 Save Key to Backend Environment</span>
+            </button>
+            <button class="btn btn-secondary" onclick="checkBackendHealth()">
+              <span data-i18n="settings_btn_test">🔍 Test Backend Connection</span>
+            </button>
+          </div>
+          <div id="settings-api-feedback" style="margin-top:10px;font-size:0.82rem;font-weight:600;"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Main JavaScript Controller -->
+  <script src="js/app.js?v=2.9.0"></script>
+</body>
+</html>
